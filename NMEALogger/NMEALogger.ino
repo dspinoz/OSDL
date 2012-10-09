@@ -9,11 +9,21 @@
 //#define pSCK 13
 //#define pD0 12
 
+//PINS for LEDs for memory card status
+#define pLED_RED 4
+#define pLED_GREEN 5
+
 File dataFile;
 
 void setup() 
 {  
   Serial.begin(57600);
+  
+  pinMode(pLED_RED, OUTPUT);  
+  pinMode(pLED_GREEN, OUTPUT); 
+  
+  digitalWrite(pLED_RED, HIGH);
+  digitalWrite(pLED_GREEN, LOW);
   
   //Keep trying to initialise
   while(1)
@@ -42,11 +52,15 @@ void setup()
     }
     
     //Successful file handle to memory card
+
+    digitalWrite(pLED_RED, LOW);
+    digitalWrite(pLED_GREEN, HIGH);
+
     break;
   }
 }
 
-int n = 0;
+int n = 0, i = 0;
 void loop() 
 {
   if (Serial.available())
@@ -60,6 +74,20 @@ void loop()
       
       //flush once a while... (200 bytes)
       dataFile.flush();
+      
+      //flash green led to indicate reading from GPS sensor
+      if (i%2 == 0)
+      {
+        digitalWrite(pLED_GREEN, LOW);
+      }
+      else
+      {
+        digitalWrite(pLED_GREEN, HIGH);
+      }
+      
+      i++;
+      
+      n=0;
     }
     
     n++;
